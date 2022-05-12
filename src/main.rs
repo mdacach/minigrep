@@ -1,4 +1,5 @@
 use std::env;
+use std::error::Error;
 use std::fs;
 use std::process;
 
@@ -10,9 +11,21 @@ fn main() {
         process::exit(1);
     });
 
-    let contents =
-        fs::read_to_string(config.filename).expect("Something went wrong reading the file");
+    let result = run(config);
+    if let Err(e) = result {
+        println!("Application error: {}", e);
+
+        process::exit(1);
+    }
+}
+
+// Dependency Injection
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let contents = fs::read_to_string(config.filename)?;
+
     println!("Contents: \n{}", contents);
+
+    Ok(())
 }
 
 struct Config {
